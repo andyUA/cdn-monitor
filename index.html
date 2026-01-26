@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>4 Responsive iFrame (16:9)</title>
+  <style>
+    :root{
+      --gap: 14px;
+      --radius: 14px;
+      --bg: #0f1115;
+      --card: #171a21;
+      --border: rgba(255,255,255,.10);
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height: 100%; }
+    body{
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, #1a2030 0%, var(--bg) 55%, #0b0d12 100%);
+      color: #e7e7ea;
+    }
+
+    .wrap{
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .grid{
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 800px){
+      .grid{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tile{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+
+    /* 16:9 responsive */
+    .ratio{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9; /* modern */
+      background: #0b0e14;
+    }
+    /* fallback for older browsers */
+    .ratio::before{
+      content: "";
+      display: block;
+      padding-top: 56.25%;
+    }
+    .ratio > iframe{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .bar{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: rgba(255,255,255,.75);
+      user-select: none;
+    }
+
+    .btn{
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      padding: 7px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: transform .08s ease, background .12s ease;
+    }
+    .btn:hover{ background: rgba(255,255,255,.10); }
+    .btn:active{ transform: scale(.98); }
+
+    .hint{
+      margin: 0 0 14px;
+      opacity: .85;
+      font-size: 14px;
+    }
+
+    code.inline{
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.9);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="hint">
+      CDN <code class="inline"> Monitor</code>
+    </p>
+
+    <div class="grid" id="grid">
+      <div class="tile">
+        <div class="ratio">
+          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=1&domain=flixcdn.live" allowfullscreen></iframe>
+        </div>
+        <div class="bar">
+          <span>CDN #1</span>
+          <button class="btn" data-action="reload">Reload</button>
+        </div>
+      </div>
+
+      <div class="tile">
+        <div class="ratio">
+          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=3&domain=flixcdn.live" allowfullscreen></iframe>
+        </div>
+        <div class="bar">
+          <span>CDN #3</span>
+          <button class="btn" data-action="reload">Reload</button>
+        </div>
+      </div>
+
+      <div class="tile">
+        <div class="ratio">
+          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=4&domain=flixcdn.live" allowfullscreen></iframe>
+        </div>
+        <div class="bar">
+          <span>iFrame #4</span>
+          <button class="btn" data-action="reload">Reload</button>
+        </div>
+      </div>
+
+      <div class="tile">
+        <div class="ratio">
+          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=12&domain=flixcdn.live" allowfullscreen></iframe>
+        </div>
+        <div class="bar">
+          <span>iFrame #12</span>
+          <button class="btn" data-action="reload">Reload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('grid').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action="reload"]');
+      if (!btn) return;
+      const tile = btn.closest('.tile');
+      const iframe = tile.querySelector('iframe');
+      if (!iframe) return;
+      const src = iframe.getAttribute('src');
+      iframe.setAttribute('src', src); // reload
+    });
+  </script>
+</body>
+</html>
