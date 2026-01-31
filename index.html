@@ -158,7 +158,7 @@
         const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
         const isOverFiveMinutes = seconds > 300;
         if (seconds < 60) {
-          const text = "just now";
+          const text = seconds+" seconds ago";
           return isOverFiveMinutes ? `<span style="color:red">${text}</span>` : text;
         }
         const intervals = {
