@@ -159,7 +159,7 @@
         const isOverFiveMinutes = seconds > 300;
         if (seconds < 60) {
           const text = seconds+" seconds ago";
-          return isOverFiveMinutes ? `<span style="color:red">${text}</span>` : text;
+          return text;
         }
         const intervals = {
           year: 31536000,
