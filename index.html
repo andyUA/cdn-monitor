@@ -109,6 +109,21 @@
       color: rgba(255,255,255,.9);
     }
   </style>
+  <script>
+    fetch('https://api0.flixcdn.biz/monitoring?mode=cdns&token=fdfsdeiuuehHDHHhj437shHH')
+            .then(r => {
+              if (!r.ok) throw new Error('Network response was not ok');
+              return r.json();
+            })
+            .then(data => {
+              let cdnData = data || [];
+              console.log('loaded:', cdnData);
+            })
+            .catch(err => {
+              console.error('Fetch error:', err);
+            });
+  </script>
+
 </head>
 <body>
   <div class="wrap">
@@ -117,58 +132,77 @@
     </p>
 
     <div class="grid" id="grid">
-      <div class="tile">
-        <div class="ratio">
-          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=1&domain=flixcdn.live" allowfullscreen></iframe>
-        </div>
-        <div class="bar">
-          <span>CDN #1</span>
-          <button class="btn" data-action="reload">Reload</button>
-        </div>
-      </div>
 
-      <div class="tile">
-        <div class="ratio">
-          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=3&domain=flixcdn.live" allowfullscreen></iframe>
-        </div>
-        <div class="bar">
-          <span>CDN #3</span>
-          <button class="btn" data-action="reload">Reload</button>
-        </div>
-      </div>
-
-      <div class="tile">
-        <div class="ratio">
-          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=4&domain=flixcdn.live" allowfullscreen></iframe>
-        </div>
-        <div class="bar">
-          <span>CDN  #4</span>
-          <button class="btn" data-action="reload">Reload</button>
-        </div>
-      </div>
-
-      <div class="tile">
-        <div class="ratio">
-          <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=12&domain=flixcdn.live" allowfullscreen></iframe>
-        </div>
-        <div class="bar">
-          <span>CDN #12</span>
-          <button class="btn" data-action="reload">Reload</button>
-        </div>
-      </div>
     </div>
   </div>
 
   <script>
-    document.getElementById('grid').addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action="reload"]');
-      if (!btn) return;
-      const tile = btn.closest('.tile');
-      const iframe = tile.querySelector('iframe');
-      if (!iframe) return;
-      const src = iframe.getAttribute('src');
-      iframe.setAttribute('src', src); // reload
+
+      fetch('https://api0.flixcdn.biz/monitoring?mode=cdns&token=fdfsdeiuuehHDHHhj437shHH')
+      .then(r => {
+      if (!r.ok) throw new Error('Network response was not ok');
+      return r.json();
+    })
+      .then(data => {
+      let cdnData = data || [];
+
+        const grid = document.getElementById("grid");
+
+        cdnData.data.forEach((item, index) => {
+          console.log(index, item.id, item.host,item.node_name);
+          const block = document.createElement("div");
+          block.className = "tile";
+          let txkb = item.tx5m/1000;
+          let tgo = timeAgo(item.last_report);
+          block.innerHTML = `
+                            <div class="ratio">
+                              <iframe src="https://player0.flixcdn.space/show/kinopoisk/464475?cdn=${item.id}&domain=flixcdn.live" allowfullscreen></iframe>
+                            </div>
+                            <div class="bar">
+                              <span>${item.host}(${item.node_name})<br><span class="small">
+                              LAST CHECK: ${tgo}</span><br><span class="small">
+                              TX(kB): ${txkb}</span></span>
+                              <button class="btn" data-action="reload">Reload</button>
+                            </div>
+                          `;
+          grid.appendChild(block);
+        });
+    })
+      .catch(err => {
+      console.error('Fetch error:', err);
     });
+
+      function timeAgo(dateString) {
+        const date = new Date(dateString.replace(" ", "T"));
+        const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+
+        if (seconds < 60) return "just now";
+
+        const intervals = {
+          year: 31536000,
+          month: 2592000,
+          day: 86400,
+          hour: 3600,
+          minute: 60
+        };
+
+        for (const [unit, value] of Object.entries(intervals)) {
+          const amount = Math.floor(seconds / value);
+          if (amount >= 1) {
+            return `${amount} ${unit}${amount > 1 ? "s" : ""} ago`;
+          }
+        }
+      }
+
+  document.getElementById('grid').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-action="reload"]');
+  if (!btn) return;
+  const tile = btn.closest('.tile');
+  const iframe = tile.querySelector('iframe');
+  if (!iframe) return;
+  const src = iframe.getAttribute('src');
+  iframe.setAttribute('src', src); // reload
+  });
   </script>
 </body>
 </html>
