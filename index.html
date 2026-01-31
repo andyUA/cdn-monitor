@@ -137,17 +137,14 @@
   </div>
 
   <script>
-
       fetch('https://api0.flixcdn.biz/monitoring?mode=cdns&token=fdfsdeiuuehHDHHhj437shHH')
       .then(r => {
       if (!r.ok) throw new Error('Network response was not ok');
       return r.json();
     })
       .then(data => {
-      let cdnData = data || [];
-
+        let cdnData = data || [];
         const grid = document.getElementById("grid");
-
         cdnData.data.forEach((item, index) => {
           console.log(index, item.id, item.host,item.node_name);
           const block = document.createElement("div");
@@ -171,13 +168,14 @@
       .catch(err => {
       console.error('Fetch error:', err);
     });
-
       function timeAgo(dateString) {
-        const date = new Date(dateString.replace(" ", "T"));
+        const date = new Date(dateString.replace(" ", "T") + "Z");
         const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-
-        if (seconds < 60) return "just now";
-
+        const isOverFiveMinutes = seconds > 300;
+        if (seconds < 60) {
+          const text = "just now";
+          return isOverFiveMinutes ? `<span style="color:red">${text}</span>` : text;
+        }
         const intervals = {
           year: 31536000,
           month: 2592000,
@@ -185,14 +183,17 @@
           hour: 3600,
           minute: 60
         };
-
         for (const [unit, value] of Object.entries(intervals)) {
           const amount = Math.floor(seconds / value);
           if (amount >= 1) {
-            return `${amount} ${unit}${amount > 1 ? "s" : ""} ago`;
+            const text = `${amount} ${unit}${amount > 1 ? "s" : ""} ago`;
+            return isOverFiveMinutes
+                    ? `<span style="color:red">${text}</span>`
+                    : text;
           }
         }
       }
+
 
   document.getElementById('grid').addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-action="reload"]');
