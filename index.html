@@ -109,21 +109,6 @@
       color: rgba(255,255,255,.9);
     }
   </style>
-  <script>
-    fetch('https://api0.flixcdn.biz/monitoring?mode=cdns&token=fdfsdeiuuehHDHHhj437shHH')
-            .then(r => {
-              if (!r.ok) throw new Error('Network response was not ok');
-              return r.json();
-            })
-            .then(data => {
-              let cdnData = data || [];
-              console.log('loaded:', cdnData);
-            })
-            .catch(err => {
-              console.error('Fetch error:', err);
-            });
-  </script>
-
 </head>
 <body>
   <div class="wrap">
